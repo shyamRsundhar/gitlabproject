@@ -15,8 +15,8 @@ phases:
 
   pre_build:
     commands:
-      - echo Setting image tag...
-      - IMAGE_TAG=$(echo $CODEBUILD_RESOLVED_SOURCE_VERSION | cut -c 1-7)
+      - echo Setting image tag using build number...
+      - IMAGE_TAG=$CODEBUILD_BUILD_NUMBER
       - echo IMAGE_TAG=$IMAGE_TAG
       - echo "IMAGE_TAG=$IMAGE_TAG" >> build.properties
 
