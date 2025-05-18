@@ -13,12 +13,23 @@ phases:
       - echo Logging in to Docker Hub...
       - echo "$DOCKERHUB_PASSWORD" | docker login -u "$DOCKERHUB_USERNAME" --password-stdin
 
+  pre_build:
+    commands:
+      - echo Setting image tag...
+      - IMAGE_TAG=$(echo $CODEBUILD_RESOLVED_SOURCE_VERSION | cut -c 1-7)
+      - echo IMAGE_TAG=$IMAGE_TAG
+      - echo "IMAGE_TAG=$IMAGE_TAG" >> build.properties
+
   build:
     commands:
       - echo Building the Docker image...
-      - docker build -t $DOCKERHUB_USERNAME/$IMAGE_NAME:latest -f app/Dockerfile app/
+      - docker build -t $DOCKERHUB_USERNAME/$IMAGE_NAME:$IMAGE_TAG -f app/Dockerfile app/
 
   post_build:
     commands:
-      - echo Pushing the image to Docker Hub...
-      - docker push $DOCKERHUB_USERNAME/$IMAGE_NAME:latest
+      - echo Pushing the Docker image with tag $IMAGE_TAG...
+      - docker push $DOCKERHUB_USERNAME/$IMAGE_NAME:$IMAGE_TAG
+
+artifacts:
+  files:
+    - build.properties
